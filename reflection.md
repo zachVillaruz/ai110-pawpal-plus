@@ -5,7 +5,14 @@
 **a. Initial design**
 
 - Briefly describe your initial UML design.
+    I had a hierarchy where the Scheduler class was the highest class, with the Owner, Pet and Task classes inheriting from it. Each class had their own fields and their own methods.
+
 - What classes did you include, and what responsibilities did you assign to each?
+    I did the four that the specification asked me to add, namely:
+    - Scheduler, which was responsible for generating a schedule for the pet owners to follow.
+    - Owner, a class to represent a pet owner. It was responsible for telling the program who the pet belongs to.
+    - Pet, a class to represent well... a pet. It's responsible for having information like its name, species, age, and more.
+    - Task, a class to represent a task. This helps organize the schedule, and allow there to be tasks with their own title, duration, and more.
 
 **b. Design changes**
 
