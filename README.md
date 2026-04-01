@@ -41,3 +41,8 @@ pip install -r requirements.txt
 5. Add tests to verify key behaviors.
 6. Connect your logic to the Streamlit UI in `app.py`.
 7. Refine UML so it matches what you actually built.
+
+
+### Testing PawPal+
+
+If you run "python -m pytest" it should tell you that all 19 tests have passed with flying colors. The test covers things like making sure a task completes or can be added, checking for task confliction, any sorting errors, and more. However, I will rate it 4 stars, as there is always room for error in a program, no matter what, and I don't think it would ever be possible to be 100% confident that a program will ALWAYS work as intended (which would be worthy of a 5 star rating).
