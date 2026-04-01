@@ -17,7 +17,9 @@
 **b. Design changes**
 
 - Did your design change during implementation?
+    No, it stayed the same. We were required to use the four classes Owner, Pet, Task and Scheduler, and I decided those were fine enough. The AI suggested making a 5th class, Schedule (different from Scheduler), but I deemed that unnecessary.
 - If yes, describe at least one change and why you made it.
+    No change.
 
 ---
 
