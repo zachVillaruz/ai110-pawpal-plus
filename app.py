@@ -1,7 +1,8 @@
 import streamlit as st
 from pawpal_system import Owner, Pet, Task, Scheduler
+from datetime import time
 
-st.set_page_config(page_title="PawPal+", page_icon="🐾", layout="centered")
+st.set_page_config(page_title="PawPal+", page_icon="🐾", layout="wide")
 
 st.title("🐾 PawPal+")
 
@@ -160,6 +161,76 @@ if st.button("Generate schedule"):
         st.warning("⚠️ No tasks added yet. Please add at least one task first.")
     else:
         scheduler = Scheduler(owner)
+        all_tasks = owner.get_all_tasks()
+        
+        # CHECK FOR CONFLICTS FIRST
+        st.markdown("### Conflict Detection")
+        conflicts = scheduler.detect_time_conflicts(all_tasks)
+        
+        if conflicts:
+            st.warning("⚠️ Task scheduling conflicts detected!")
+            with st.expander("View conflicts", expanded=True):
+                for conflict in conflicts:
+                    if "[CONFLICT]" in conflict:
+                        st.error(f"🚨 {conflict}")
+                    else:
+                        st.info(f"ℹ️ {conflict}")
+            
+            st.markdown("""
+**How to resolve:**
+- Reschedule one of the conflicting tasks to a different time
+- Consider combining tasks if they can be done together
+- Check if one task can be split into multiple shorter sessions
+            """)
+        else:
+            st.success("✅ No scheduling conflicts detected!")
+        
+        st.divider()
+        
+        # TASK OVERVIEW WITH SORTING AND FILTERING
+        st.markdown("### Task Overview")
+        
+        col1, col2 = st.columns(2)
+        with col1:
+            sort_by = st.radio("Sort by:", ["Priority", "Time", "Duration"], horizontal=True)
+        with col2:
+            filter_pet = st.selectbox("Filter by pet:", ["All"] + [p.get_name() for p in owner.get_pets()])
+        
+        # Apply filtering
+        if filter_pet != "All":
+            filtered_tasks = scheduler.filter_by_pet_name(all_tasks, filter_pet)
+        else:
+            filtered_tasks = all_tasks
+        
+        # Apply sorting
+        if sort_by == "Time":
+            sorted_tasks = scheduler.sort_by_time(filtered_tasks)
+        elif sort_by == "Priority":
+            sorted_tasks = scheduler.optimize_tasks(filtered_tasks)
+        else:  # Duration
+            sorted_tasks = sorted(filtered_tasks, key=lambda t: t.get_duration())
+        
+        # Display as professional table
+        if sorted_tasks:
+            task_table_data = []
+            for task in sorted_tasks:
+                task_table_data.append({
+                    "Pet": task.pet.get_name() if task.pet else "Unknown",
+                    "Task": task.get_title(),
+                    "Duration (min)": task.get_duration(),
+                    "Priority": task.get_priority().upper(),
+                    "Time": task.scheduled_time.strftime("%H:%M") if task.scheduled_time else "Unscheduled",
+                    "Status": "✓ Done" if task.completed else "○ Pending"
+                })
+            
+            st.dataframe(task_table_data, use_container_width=True)
+        else:
+            st.info("No tasks match the filter.")
+        
+        st.divider()
+        
+        # GENERATE FULL SCHEDULE
+        st.markdown("### Generate Optimized Schedule")
         schedule = scheduler.generate_schedule()
         
         if schedule["success"]:
@@ -173,16 +244,36 @@ if st.button("Generate schedule"):
             with col3:
                 st.metric("Owner", schedule["owner"])
             
-            st.markdown("### Scheduled Tasks")
+            # Styled task display
+            st.markdown("### Scheduled Tasks (by Priority)")
             for i, task in enumerate(schedule["tasks"], 1):
-                with st.expander(f"{i}. [{task['priority'].upper()}] {task['title']} ({task['pet']})"):
-                    st.write(f"**Pet:** {task['pet']}")
-                    st.write(f"**Duration:** {task['duration']} minutes")
-                    st.write(f"**Priority:** {task['priority'].upper()}")
+                # Color-code by priority
+                priority_emoji = {"HIGH": "🔴", "MEDIUM": "🟡", "LOW": "🟢"}
+                emoji = priority_emoji.get(task['priority'].upper(), "⚪")
+                
+                with st.expander(f"{emoji} {i}. [{task['priority'].upper()}] {task['title']} - {task['pet']}"):
+                    col1, col2, col3 = st.columns(3)
+                    with col1:
+                        st.write(f"**Pet:** {task['pet']}")
+                    with col2:
+                        st.write(f"**Duration:** {task['duration']} min")
+                    with col3:
+                        st.write(f"**Priority:** {task['priority'].upper()}")
+                    
                     if task['description']:
-                        st.write(f"**Description:** {task['description']}")
+                        st.write(f"**Details:** {task['description']}")
             
             st.markdown("### Plan Explanation")
             st.info(schedule["explanation"])
         else:
             st.error(f"❌ Error: {schedule['message']}")
+            st.warning("""
+**Why did scheduling fail?**
+- Your total task duration exceeds the max daily minutes limit
+- Check your preferences and constraints
+
+**Suggestions:**
+- Reduce the number of tasks for today
+- Increase your max_daily_minutes preference
+- Split longer tasks across multiple days
+            """)

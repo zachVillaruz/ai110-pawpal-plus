@@ -64,12 +64,16 @@
 **a. What you tested**
 
 - What behaviors did you test?
+    As mentioned in the README, the tests test for things like making sure a task completes properly or can be added, checking for task confliction, any sorting errors, and other various things.
 - Why were these tests important?
+    Because they were a proper function that the AI was able to code on the application. We'd need to be able to test that that function works without any errors, so making a test to test these things is very important.
 
 **b. Confidence**
 
 - How confident are you that your scheduler works correctly?
+    Mostly, but not entirely. The tests passed fine, but as I said in the README, there is no surefire way to ensure if a program will work 100% or not. It's just not possible in a human sense, and it's probably not possible in a technical sense either. There are always bugs, no matter what.
 - What edge cases would you test next if you had more time?
+    Probably the edge cases where if a task was just exactly on the limit. Like a task that takes 480 minutes exactly. I didn't have much time when I attempted this project, so I didn't have time to get to test this sadly.
 
 ---
 
@@ -78,11 +82,14 @@
 **a. What went well**
 
 - What part of this project are you most satisfied with?
+    Making the classes stubs, because I felt like I understood everything that was going on in the code. I still do now, but to a bit of a lesser extent due to how long the code was getting.
 
 **b. What you would improve**
 
 - If you had another iteration, what would you improve or redesign?
+    I'd figure out how to improve performance, finding out if there's any ways to lower memory used up, so that people with lower-end devices can use this application without any slowdown.
 
 **c. Key takeaway**
 
 - What is one important thing you learned about designing systems or working with AI on this project?
+    It's a lot of work. AI can get you far when doing things like this, but you still need to be a second eye to make sure it's not suggesting anything odd or incorrect.
